@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ToolScout — Find the right tool faster</title>
+  <meta name="description" content="Discover useful software, AI tools, productivity apps, and creator tools in one simple directory.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="index.html"><span class="brand-mark">TS</span> ToolScout</a>
+  <nav>
+    <a href="#tools">Tools</a><a href="#categories">Categories</a><a href="about.html">About</a>
+  </nav>
+  <a class="button small" href="#tools">Explore tools</a>
+</header>
+
+<main>
+<section class="hero">
+  <div class="eyebrow">CURATED • SIMPLE • USEFUL</div>
+  <h1>Find the right tool<br><span>without the endless search.</span></h1>
+  <p>Browse practical software and online tools for work, creativity, business, and everyday life.</p>
+  <div class="hero-actions"><a class="button" href="#tools">Browse tools</a><a class="button ghost" href="#how">How it works</a></div>
+  <div class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="Search tools, categories, or use cases…"></div>
+</section>
+
+<section class="stats">
+  <div><strong id="toolCount">12</strong><span>tools listed</span></div>
+  <div><strong>4</strong><span>core categories</span></div>
+  <div><strong>100%</strong><span>independent curation</span></div>
+</section>
+
+<section id="categories" class="section">
+  <div class="section-heading"><div><div class="eyebrow">BROWSE</div><h2>Start with a category</h2></div></div>
+  <div class="category-grid">
+    <button class="category" data-category="AI"><span>✦</span><b>AI & Automation</b><small>Work smarter</small></button>
+    <button class="category" data-category="Productivity"><span>✓</span><b>Productivity</b><small>Get organized</small></button>
+    <button class="category" data-category="Design"><span>◈</span><b>Design</b><small>Create better</small></button>
+    <button class="category" data-category="Business"><span>↗</span><b>Business</b><small>Build & grow</small></button>
+  </div>
+</section>
+
+<section id="tools" class="section">
+  <div class="section-heading">
+    <div><div class="eyebrow">DIRECTORY</div><h2>Popular tools</h2></div>
+    <select id="sort"><option value="featured">Featured</option><option value="name">Name A–Z</option></select>
+  </div>
+  <div id="toolGrid" class="tool-grid"></div>
+  <p id="empty" class="empty" hidden>No tools matched your search.</p>
+</section>
+
+<section id="how" class="how section">
+  <div class="eyebrow">HOW IT WORKS</div><h2>Useful recommendations, without the noise.</h2>
+  <div class="steps">
+    <article><span>01</span><h3>Discover</h3><p>Search by what you need instead of memorizing product names.</p></article>
+    <article><span>02</span><h3>Compare</h3><p>Review the short description, use case, and pricing notes.</p></article>
+    <article><span>03</span><h3>Try</h3><p>Visit the provider and decide whether the tool fits your workflow.</p></article>
+  </div>
+</section>
+
+<section class="cta"><h2>Know a tool worth sharing?</h2><p>ToolScout is built around useful discoveries. Send us a recommendation.</p><a class="button" href="mailto:hello@example.com">Suggest a tool</a></section>
+</main>
+
+<footer><span>© 2026 ToolScout</span><span><a href="privacy.html">Privacy</a> · <a href="disclosure.html">Affiliate disclosure</a> · <a href="about.html">About</a></span></footer>
+<script src="app.js"></script>
+</body>
+</html>
