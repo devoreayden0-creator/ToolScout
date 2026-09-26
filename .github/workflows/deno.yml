@@ -64,4 +64,4 @@ jobs:
                 `${story.source}: ${story.title}`
               );
             }
-          ' --allow-read
+          '
