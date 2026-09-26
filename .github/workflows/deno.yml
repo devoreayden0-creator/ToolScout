@@ -1,16 +1,9 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow will install Deno then run `deno lint` and `deno test`.
-# For more information see: https://github.com/denoland/setup-deno
-
 name: Deno
 
 on:
   push:
     branches: ["main"]
+
   pull_request:
     branches: ["main"]
 
@@ -23,20 +16,52 @@ jobs:
 
     steps:
       - name: Setup repo
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup Deno
-        # uses: denoland/setup-deno@v1
-        uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31  # v1.1.2
+        uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31 # v1.1.2
         with:
           deno-version: v1.x
-
-      # Uncomment this step to verify the use of 'deno fmt' on each commit.
-      # - name: Verify formatting
-      #   run: deno fmt --check
 
       - name: Run linter
         run: deno lint
 
       - name: Run tests
         run: deno test -A --permit-no-files
+
+      - name: Test NOVLIRI live news feeds
+        if: github.event_name == 'pull_request'
+        run: deno run --allow-net --allow-read --allow-write update-news.js
+
+      - name: Verify generated news feed
+        if: github.event_name == 'pull_request'
+        run: |
+          deno eval '
+            const stories = JSON.parse(
+              await Deno.readTextFile("news.json")
+            );
+
+            if (!Array.isArray(stories)) {
+              throw new Error("news.json is not an array");
+            }
+
+            const externalStories = stories.filter(
+              story => story.source !== "NOVLIRI"
+            );
+
+            if (externalStories.length === 0) {
+              throw new Error(
+                "No live external stories were retrieved"
+              );
+            }
+
+            console.log(
+              `Live feed test passed: ${externalStories.length} external stories retrieved.`
+            );
+
+            for (const story of externalStories) {
+              console.log(
+                `${story.source}: ${story.title}`
+              );
+            }
+          ' --allow-read
