@@ -3,68 +3,438 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
- <title>NOVLIRI - Discover better software</title>
-  <meta name="description" content="Discover useful software, AI tools, productivity apps, and creator tools in one simple directory.">
-<link rel="stylesheet" href="styles.css">
 
-<meta name='impact-site-verification' value='ffeb6ba0-d42e-48e5-a710-cf6377a7dfc6'>
+  <title>NOVLIRI — Discover Better Software</title>
+
+  <meta name="description"
+        content="Discover curated AI tools, productivity apps, business software, and creator tools with NOVLIRI.">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <meta name="impact-site-verification"
+        value="ffeb6ba0-d42e-48e5-a710-cf6377a7dfc6">
 </head>
+
 <body>
+
+<div class="ambient ambient-one"></div>
+<div class="ambient ambient-two"></div>
+
 <header class="site-header">
- <a class="brand" href="index.html"><span class="brand-mark">N</span> NOVLIRI</a>
+
+  <a class="brand" href="index.html">
+    <span class="brand-mark">N</span>
+    <span>NOVLIRI</span>
+  </a>
+
   <nav>
-    <a href="#tools">Tools</a><a href="#categories">Categories</a><a href="about.html">About</a>
+    <a href="#tools">Explore</a>
+    <a href="#categories">Categories</a>
+    <a href="#how">How it works</a>
+    <a href="about.html">About</a>
   </nav>
-  <a class="button small" href="#tools">Explore tools</a>
+
+  <a class="button small" href="#tools">
+    Explore tools
+    <span>→</span>
+  </a>
+
 </header>
 
+
 <main>
+
+<!-- HERO -->
+
 <section class="hero">
-  <div class="eyebrow">CURATED • SIMPLE • USEFUL</div>
-  <h1>Discover better software.<br><span>Build smarter.</span></h1>
-  <p>Discover AI tools, productivity apps, business software, and creator tools—all curated to help you find what works.</p>
-  <div class="hero-actions"><a class="button" href="#tools">Browse tools</a><a class="button ghost" href="#how">How it works</a></div>
-  <div class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="Search tools, categories, or use cases…"></div>
+
+  <div class="hero-badge">
+    <span class="pulse"></span>
+    CURATED SOFTWARE DISCOVERY
+  </div>
+
+  <h1>
+    Discover <span class="gradient-text">better</span><br>
+    software.
+  </h1>
+
+  <h2 class="hero-subtitle">Build smarter.</h2>
+
+  <p>
+    Cut through the noise. Discover useful AI tools,
+    productivity apps, business software, and creator tools
+    curated to help you find what actually works.
+  </p>
+
+  <div class="hero-actions">
+
+    <a class="button primary" href="#tools">
+      Explore tools
+      <span>→</span>
+    </a>
+
+    <a class="button ghost" href="#how">
+      How it works
+    </a>
+
+  </div>
+
+  <div class="search-wrap">
+
+    <span class="search-icon">⌕</span>
+
+    <input
+      id="search"
+      type="search"
+      placeholder="Search tools, categories, or use cases…"
+      autocomplete="off"
+    >
+
+    <span class="search-hint">Search</span>
+
+  </div>
+
 </section>
+
+
+<!-- STATS -->
 
 <section class="stats">
-  <div><strong id="toolCount">12</strong><span>tools listed</span></div>
-  <div><strong>4</strong><span>core categories</span></div>
-  <div><strong>100%</strong><span>independent curation</span></div>
+
+  <div>
+    <strong id="toolCount">12</strong>
+    <span>Curated tools</span>
+  </div>
+
+  <div>
+    <strong>4</strong>
+    <span>Core categories</span>
+  </div>
+
+  <div>
+    <strong>100%</strong>
+    <span>Independent discovery</span>
+  </div>
+
 </section>
+
+
+<!-- CATEGORIES -->
 
 <section id="categories" class="section">
-  <div class="section-heading"><div><div class="eyebrow">BROWSE</div><h2>Start with a category</h2></div></div>
-  <div class="category-grid">
-    <button class="category" data-category="AI"><span>✦</span><b>AI & Automation</b><small>Work smarter</small></button>
-    <button class="category" data-category="Productivity"><span>✓</span><b>Productivity</b><small>Get organized</small></button>
-    <button class="category" data-category="Design"><span>◈</span><b>Design</b><small>Create better</small></button>
-    <button class="category" data-category="Business"><span>↗</span><b>Business</b><small>Build & grow</small></button>
-  </div>
-</section>
 
-<section id="tools" class="section">
   <div class="section-heading">
-    <div><div class="eyebrow">DIRECTORY</div><h2>Popular tools</h2></div>
-    <select id="sort"><option value="featured">Featured</option><option value="name">Name A–Z</option></select>
+
+    <div>
+      <div class="eyebrow">EXPLORE BY CATEGORY</div>
+      <h2>Find what you need.</h2>
+    </div>
+
+    <a class="section-link" href="#tools">
+      View all tools →
+    </a>
+
   </div>
-  <div id="toolGrid" class="tool-grid"></div>
-  <p id="empty" class="empty" hidden>No tools matched your search.</p>
+
+
+  <div class="category-grid">
+
+    <button class="category category-ai" data-category="AI">
+
+      <span class="category-icon">✦</span>
+
+      <div>
+        <b>AI & Automation</b>
+        <small>Work faster with intelligent tools.</small>
+      </div>
+
+      <span class="category-arrow">↗</span>
+
+    </button>
+
+
+    <button class="category category-productivity" data-category="Productivity">
+
+      <span class="category-icon">✓</span>
+
+      <div>
+        <b>Productivity</b>
+        <small>Organize work and get more done.</small>
+      </div>
+
+      <span class="category-arrow">↗</span>
+
+    </button>
+
+
+    <button class="category category-design" data-category="Design">
+
+      <span class="category-icon">◈</span>
+
+      <div>
+        <b>Design & Creative</b>
+        <small>Create, design, and bring ideas to life.</small>
+      </div>
+
+      <span class="category-arrow">↗</span>
+
+    </button>
+
+
+    <button class="category category-business" data-category="Business">
+
+      <span class="category-icon">↗</span>
+
+      <div>
+        <b>Business</b>
+        <small>Tools for building and growing.</small>
+      </div>
+
+      <span class="category-arrow">↗</span>
+
+    </button>
+
+  </div>
+
 </section>
 
-<section id="how" class="how section">
-  <div class="eyebrow">HOW IT WORKS</div><h2>Useful recommendations, without the noise.</h2>
+
+<!-- TOOL DIRECTORY -->
+
+<section id="tools" class="section tools-section">
+
+  <div class="section-heading">
+
+    <div>
+
+      <div class="eyebrow">
+        SOFTWARE DIRECTORY
+      </div>
+
+      <h2>
+        Tools worth discovering.
+      </h2>
+
+      <p class="section-description">
+        A growing collection of useful software selected
+        for creators, professionals, and businesses.
+      </p>
+
+    </div>
+
+
+    <select id="sort">
+
+      <option value="featured">
+        Featured
+      </option>
+
+      <option value="name">
+        Name A–Z
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div
+    id="toolGrid"
+    class="tool-grid">
+  </div>
+
+
+  <p
+    id="empty"
+    class="empty"
+    hidden>
+
+    No tools matched your search.
+
+  </p>
+
+</section>
+
+
+<!-- HOW IT WORKS -->
+
+<section
+  id="how"
+  class="how section">
+
+  <div class="how-heading">
+
+    <div class="eyebrow">
+      WHY NOVLIRI
+    </div>
+
+    <h2>
+      Software discovery<br>
+      without the noise.
+    </h2>
+
+    <p>
+      We make finding useful software simpler.
+      Search, compare, and explore without digging
+      through endless lists.
+    </p>
+
+  </div>
+
+
   <div class="steps">
-    <article><span>01</span><h3>Discover</h3><p>Search by what you need instead of memorizing product names.</p></article>
-    <article><span>02</span><h3>Compare</h3><p>Review the short description, use case, and pricing notes.</p></article>
-    <article><span>03</span><h3>Try</h3><p>Visit the provider and decide whether the tool fits your workflow.</p></article>
+
+    <article>
+
+      <span class="step-number">
+        01
+      </span>
+
+      <div class="step-icon">
+        ⌕
+      </div>
+
+      <h3>
+        Discover
+      </h3>
+
+      <p>
+        Find software based on what you actually
+        want to accomplish.
+      </p>
+
+    </article>
+
+
+    <article>
+
+      <span class="step-number">
+        02
+      </span>
+
+      <div class="step-icon">
+        ◈
+      </div>
+
+      <h3>
+        Compare
+      </h3>
+
+      <p>
+        Quickly understand each tool's purpose,
+        category, and pricing model.
+      </p>
+
+    </article>
+
+
+    <article>
+
+      <span class="step-number">
+        03
+      </span>
+
+      <div class="step-icon">
+        ↗
+      </div>
+
+      <h3>
+        Explore
+      </h3>
+
+      <p>
+        Visit the provider and decide whether
+        the software fits your workflow.
+      </p>
+
+    </article>
+
   </div>
+
 </section>
 
-<section class="cta"><h2>Know a tool worth sharing?</h2><p>NOVLIRI helps people discover better software. Send us a recommendation.</p><a class="button" href="mailto:hello@example.com">Suggest a tool</a></section>
+
+<!-- CTA -->
+
+<section class="cta">
+
+  <div class="cta-glow"></div>
+
+  <div class="eyebrow">
+    DISCOVER SOMETHING GREAT?
+  </div>
+
+  <h2>
+    Know a tool worth sharing?
+  </h2>
+
+  <p>
+    Help us grow the NOVLIRI directory by
+    recommending useful software.
+  </p>
+
+  <a
+    class="button primary"
+    href="about.html">
+
+    Learn about NOVLIRI
+    <span>→</span>
+
+  </a>
+
+</section>
+
 </main>
 
-<footer><span>© 2026 NOVLIRI</span><span><a href="privacy.html">Privacy</a> · <a href="disclosure.html">Affiliate disclosure</a> · <a href="about.html">About</a></span></footer>
+
+<footer>
+
+  <div class="footer-brand">
+
+    <span class="brand-mark">
+      N
+    </span>
+
+    <div>
+
+      <strong>
+        NOVLIRI
+      </strong>
+
+      <small>
+        Discover better software.
+      </small>
+
+    </div>
+
+  </div>
+
+
+  <div class="footer-links">
+
+    <a href="privacy.html">
+      Privacy
+    </a>
+
+    <a href="disclosure.html">
+      Affiliate disclosure
+    </a>
+
+    <a href="about.html">
+      About
+    </a>
+
+  </div>
+
+
+  <span class="copyright">
+    © 2026 NOVLIRI
+  </span>
+
+</footer>
+
+
 <script src="app.js"></script>
+
 </body>
 </html>
