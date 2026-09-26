@@ -169,8 +169,9 @@ function stripHtml(value = "") {
 }
 
 function cleanText(value = "", maxLength = 300) {
-  const text = stripHtml(value)
-    .replace(/\u0000/g, "")
+  const text = Array.from(stripHtml(value))
+    .filter(character => character.codePointAt(0) !== 0)
+    .join("")
     .trim();
 
   if (text.length <= maxLength) {
