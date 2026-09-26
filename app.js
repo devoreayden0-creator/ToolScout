@@ -470,10 +470,63 @@ const toolCount = document.querySelector("#toolCount");
 
 toolCount.textContent = tools.length;
 
+function createToolCard(tool) {
+  const article = document.createElement("article");
+  article.className = "tool-card";
+
+  const top = document.createElement("div");
+  top.className = "tool-top";
+
+  const icon = document.createElement("div");
+  icon.className = "tool-icon";
+  icon.textContent = tool.name.slice(0, 1);
+
+  const tag = document.createElement("span");
+  tag.className = "tag";
+  tag.textContent = tool.cat;
+
+  top.append(icon, tag);
+
+  const heading = document.createElement("h3");
+  heading.textContent = tool.name;
+
+  const description = document.createElement("p");
+  description.textContent = tool.desc;
+
+  const bottom = document.createElement("div");
+  bottom.className = "tool-bottom";
+
+  const price = document.createElement("span");
+  price.textContent = tool.price;
+
+  const link = document.createElement("a");
+  link.textContent = "Visit ↗";
+  link.target = "_blank";
+  link.rel = tool.affiliate ? "noopener sponsored" : "noopener";
+
+  // Only allow normal HTTPS destinations from directory data.
+  try {
+    const destination = new URL(tool.url);
+    if (destination.protocol === "https:") {
+      link.href = destination.href;
+    } else {
+      throw new Error("Unsupported URL protocol");
+    }
+  } catch {
+    link.removeAttribute("href");
+    link.setAttribute("aria-disabled", "true");
+  }
+
+  bottom.append(price, link);
+  article.append(top, heading, description, bottom);
+
+  return article;
+}
+
 function render() {
   const q = (search.value || "").toLowerCase().trim();
 
-  let list = tools.filter(tool => {
+  const list = tools.filter(tool => {
     const searchable = [
       tool.name,
       tool.cat,
@@ -494,30 +547,13 @@ function render() {
     );
   }
 
-  grid.innerHTML = list.map(tool => `
-    <article class="tool-card">
-      <div class="tool-top">
-        <div class="tool-icon">${tool.name.slice(0, 1)}</div>
-        <span class="tag">${tool.cat}</span>
-      </div>
+  const fragment = document.createDocumentFragment();
 
-      <h3>${tool.name}</h3>
-      <p>${tool.desc}</p>
+  list.forEach(tool => {
+    fragment.appendChild(createToolCard(tool));
+  });
 
-      <div class="tool-bottom">
-        <span>${tool.price}</span>
-
-        <a
-          href="${tool.url}"
-          target="_blank"
-          rel="${tool.affiliate ? "noopener sponsored" : "noopener"}"
-        >
-          Visit ↗
-        </a>
-      </div>
-    </article>
-  `).join("");
-
+  grid.replaceChildren(fragment);
   empty.hidden = list.length > 0;
 }
 
