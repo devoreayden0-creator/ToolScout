@@ -3,9 +3,9 @@
 /*
  * NOVLIRI Learn — News Feed Generator
  *
- * This script runs in GitHub Actions, retrieves approved RSS/Atom feeds,
- * validates the data, removes duplicates, categorizes stories, and writes
- * a safe static news.json file for the NOVLIRI Learn page.
+ * Runs in GitHub Actions.
+ * Retrieves approved RSS/Atom feeds, validates incoming data,
+ * removes duplicates, categorizes stories, and generates news.json.
  *
  * No API keys are required.
  */
@@ -18,10 +18,7 @@ const MAX_STORY_AGE_DAYS = 14;
 const REQUEST_TIMEOUT_MS = 15000;
 
 /*
- * Approved feeds.
- *
- * Keep this list intentionally small. NOVLIRI should favor established
- * sources instead of pulling content from arbitrary websites.
+ * Approved sources only.
  */
 const FEEDS = [
   {
@@ -42,7 +39,7 @@ const FEEDS = [
 ];
 
 /*
- * We only allow categories that exist on NOVLIRI Learn.
+ * Categories supported by NOVLIRI Learn.
  */
 const ALLOWED_CATEGORIES = new Set([
   "AI News",
@@ -130,6 +127,11 @@ const PRODUCTIVITY_KEYWORDS = [
   "office"
 ];
 
+/*
+ * Decode a limited set of common XML/HTML entities.
+ *
+ * &amp; is intentionally decoded last to prevent double decoding.
+ */
 function decodeEntities(value = "") {
   return value
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/gi, "$1")
@@ -159,15 +161,42 @@ function decodeEntities(value = "") {
     .replace(/&amp;/gi, "&");
 }
 
+/*
+ * Convert incoming feed markup to plain text.
+ *
+ * This deliberately avoids attempting to sanitize HTML using
+ * regular expressions.
+ */
 function stripHtml(value = "") {
-  return decodeEntities(value)
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]*>/g, " ")
+  let result = "";
+  let insideTag = false;
+
+  for (const character of value) {
+    if (character === "<") {
+      insideTag = true;
+      result += " ";
+      continue;
+    }
+
+    if (character === ">") {
+      insideTag = false;
+      result += " ";
+      continue;
+    }
+
+    if (!insideTag) {
+      result += character;
+    }
+  }
+
+  return decodeEntities(result)
     .replace(/\s+/g, " ")
     .trim();
 }
 
+/*
+ * Clean untrusted text received from external feeds.
+ */
 function cleanText(value = "", maxLength = 300) {
   const text = Array.from(stripHtml(value))
     .filter(character => character.codePointAt(0) !== 0)
@@ -181,6 +210,9 @@ function cleanText(value = "", maxLength = 300) {
   return `${text.slice(0, maxLength - 1).trim()}…`;
 }
 
+/*
+ * NOVLIRI only allows HTTPS outbound story links.
+ */
 function safeHttpsUrl(value) {
   try {
     const url = new URL(decodeEntities(value).trim());
@@ -195,6 +227,9 @@ function safeHttpsUrl(value) {
   }
 }
 
+/*
+ * Extract the first matching XML element.
+ */
 function extractTag(xml, tagNames) {
   for (const tagName of tagNames) {
     const escaped = tagName.replace(":", "\\:");
@@ -214,6 +249,9 @@ function extractTag(xml, tagNames) {
   return "";
 }
 
+/*
+ * Atom feeds frequently store their URL inside a link href.
+ */
 function extractAtomLink(entry) {
   const alternateMatch = entry.match(
     /<link\b[^>]*\brel=["']alternate["'][^>]*\bhref=["']([^"']+)["'][^>]*\/?>/i
@@ -234,11 +272,17 @@ function extractAtomLink(entry) {
   return extractTag(entry, ["link"]);
 }
 
+/*
+ * Support both RSS <item> and Atom <entry>.
+ */
 function extractEntries(xml) {
   const entries = [];
 
-  const itemRegex = /<item\b[\s\S]*?<\/item>/gi;
-  const entryRegex = /<entry\b[\s\S]*?<\/entry>/gi;
+  const itemRegex =
+    /<item\b[\s\S]*?<\/item>/gi;
+
+  const entryRegex =
+    /<entry\b[\s\S]*?<\/entry>/gi;
 
   entries.push(...(xml.match(itemRegex) || []));
   entries.push(...(xml.match(entryRegex) || []));
@@ -257,60 +301,111 @@ function parseDate(value) {
 }
 
 function isRecent(date) {
-  const age = Date.now() - date.getTime();
+  const age =
+    Date.now() - date.getTime();
+
   const maximumAge =
-    MAX_STORY_AGE_DAYS * 24 * 60 * 60 * 1000;
+    MAX_STORY_AGE_DAYS *
+    24 *
+    60 *
+    60 *
+    1000;
 
   /*
-   * Allow a small amount of clock skew for feeds whose servers are
-   * slightly ahead of GitHub's runner clock.
+   * Small tolerance for publisher/server clock differences.
    */
-  const futureTolerance = 6 * 60 * 60 * 1000;
+  const futureTolerance =
+    6 * 60 * 60 * 1000;
 
-  return age <= maximumAge && age >= -futureTolerance;
-}
-
-function containsKeyword(text, keywords) {
-  const normalized = text.toLowerCase();
-
-  return keywords.some(keyword =>
-    normalized.includes(keyword.toLowerCase())
+  return (
+    age <= maximumAge &&
+    age >= -futureTolerance
   );
 }
 
-function categorizeStory(title, description, defaultCategory) {
-  const text = `${title} ${description}`;
+function containsKeyword(text, keywords) {
+  const normalized =
+    text.toLowerCase();
 
-  if (containsKeyword(text, CYBERSECURITY_KEYWORDS)) {
+  return keywords.some(keyword =>
+    normalized.includes(
+      keyword.toLowerCase()
+    )
+  );
+}
+
+/*
+ * Categorize stories using their source and headline/description.
+ */
+function categorizeStory(
+  title,
+  description,
+  defaultCategory
+) {
+  const text =
+    `${title} ${description}`;
+
+  if (
+    containsKeyword(
+      text,
+      CYBERSECURITY_KEYWORDS
+    )
+  ) {
     return "Cybersecurity";
   }
 
-  if (containsKeyword(text, EDUCATION_KEYWORDS)) {
+  if (
+    containsKeyword(
+      text,
+      EDUCATION_KEYWORDS
+    )
+  ) {
     return "Education";
   }
 
-  if (containsKeyword(text, BUSINESS_KEYWORDS)) {
+  if (
+    containsKeyword(
+      text,
+      BUSINESS_KEYWORDS
+    )
+  ) {
     return "Business";
   }
 
-  if (containsKeyword(text, PRODUCTIVITY_KEYWORDS)) {
+  if (
+    containsKeyword(
+      text,
+      PRODUCTIVITY_KEYWORDS
+    )
+  ) {
     return "Work & Productivity";
   }
 
   if (
     defaultCategory === "AI News" &&
-    containsKeyword(text, AI_TOOL_KEYWORDS)
+    containsKeyword(
+      text,
+      AI_TOOL_KEYWORDS
+    )
   ) {
     return "AI Tools";
   }
 
-  if (ALLOWED_CATEGORIES.has(defaultCategory)) {
+  if (
+    ALLOWED_CATEGORIES.has(
+      defaultCategory
+    )
+  ) {
     return defaultCategory;
   }
 
   return "AI News";
 }
 
+/*
+ * We deliberately generate our own short description instead of
+ * copying article bodies or long publisher descriptions.
+ */
 function makeSummary(source, category) {
   const summaries = {
     "AI News":
@@ -335,80 +430,135 @@ function makeSummary(source, category) {
       `A practical technology resource from ${source}. Open the original source for the complete guide.`
   };
 
-  return summaries[category] || summaries["AI News"];
+  return (
+    summaries[category] ||
+    summaries["AI News"]
+  );
 }
 
+/*
+ * Convert an RSS/Atom entry into NOVLIRI's story format.
+ */
 function normalizeStory(entry, feed) {
   const title = cleanText(
-    extractTag(entry, ["title"]),
+    extractTag(
+      entry,
+      ["title"]
+    ),
     180
   );
 
-  const rawDescription = extractTag(entry, [
-    "description",
-    "summary",
-    "content:encoded",
-    "content"
-  ]);
+  const rawDescription =
+    extractTag(
+      entry,
+      [
+        "description",
+        "summary",
+        "content:encoded",
+        "content"
+      ]
+    );
 
-  const description = cleanText(rawDescription, 500);
+  const description =
+    cleanText(
+      rawDescription,
+      500
+    );
 
-  const rawUrl = extractAtomLink(entry);
-  const url = safeHttpsUrl(rawUrl);
+  const rawUrl =
+    extractAtomLink(entry);
 
-  const rawDate = extractTag(entry, [
-    "pubDate",
-    "published",
-    "updated",
-    "dc:date"
-  ]);
+  const url =
+    safeHttpsUrl(rawUrl);
 
-  const publishedDate = parseDate(rawDate);
+  const rawDate =
+    extractTag(
+      entry,
+      [
+        "pubDate",
+        "published",
+        "updated",
+        "dc:date"
+      ]
+    );
 
-  if (!title || !url || !publishedDate) {
+  const publishedDate =
+    parseDate(rawDate);
+
+  if (
+    !title ||
+    !url ||
+    !publishedDate
+  ) {
     return null;
   }
 
-  if (!isRecent(publishedDate)) {
+  if (
+    !isRecent(publishedDate)
+  ) {
     return null;
   }
 
-  const category = categorizeStory(
-    title,
-    description,
-    feed.defaultCategory
-  );
+  const category =
+    categorizeStory(
+      title,
+      description,
+      feed.defaultCategory
+    );
 
   return {
     title,
-    summary: makeSummary(feed.name, category),
+    summary:
+      makeSummary(
+        feed.name,
+        category
+      ),
     category,
     source: feed.name,
-    published: publishedDate.toISOString(),
+    published:
+      publishedDate.toISOString(),
     url
   };
 }
 
+/*
+ * Retrieve one approved feed.
+ *
+ * Failure of one publisher will not take down the entire update.
+ */
 async function fetchFeed(feed) {
-  const controller = new AbortController();
+  const controller =
+    new AbortController();
 
-  const timeout = setTimeout(() => {
-    controller.abort();
-  }, REQUEST_TIMEOUT_MS);
+  const timeout =
+    setTimeout(() => {
+      controller.abort();
+    }, REQUEST_TIMEOUT_MS);
 
   try {
-    console.log(`Fetching ${feed.name}...`);
+    console.log(
+      `Fetching ${feed.name}...`
+    );
 
-    const response = await fetch(feed.url, {
-      signal: controller.signal,
-      redirect: "follow",
-      headers: {
-        "User-Agent":
-          "NOVLIRI-Learn/1.0 (+https://novliri.com/)",
-        Accept:
-          "application/rss+xml, application/atom+xml, application/xml, text/xml"
-      }
-    });
+    const response =
+      await fetch(
+        feed.url,
+        {
+          signal:
+            controller.signal,
+
+          redirect:
+            "follow",
+
+          headers: {
+            "User-Agent":
+              "NOVLIRI-Learn/1.0 (+https://novliri.com/)",
+
+            Accept:
+              "application/rss+xml, application/atom+xml, application/xml, text/xml"
+          }
+        }
+      );
 
     if (!response.ok) {
       throw new Error(
@@ -417,7 +567,9 @@ async function fetchFeed(feed) {
     }
 
     const contentType =
-      response.headers.get("content-type") || "";
+      response.headers.get(
+        "content-type"
+      ) || "";
 
     if (
       !contentType.includes("xml") &&
@@ -430,22 +582,32 @@ async function fetchFeed(feed) {
       );
     }
 
-    const xml = await response.text();
+    const xml =
+      await response.text();
 
+    /*
+     * Prevent unexpectedly huge responses from being processed.
+     */
     if (xml.length > 5_000_000) {
       throw new Error(
         `${feed.name} feed exceeded the size limit`
       );
     }
 
-    const entries = extractEntries(xml);
+    const entries =
+      extractEntries(xml);
 
     console.log(
       `${feed.name}: found ${entries.length} feed entries`
     );
 
     return entries
-      .map(entry => normalizeStory(entry, feed))
+      .map(entry =>
+        normalizeStory(
+          entry,
+          feed
+        )
+      )
       .filter(Boolean);
   } catch (error) {
     console.error(
@@ -453,35 +615,48 @@ async function fetchFeed(feed) {
       error.message
     );
 
-    /*
-     * One broken publisher should not stop the entire NOVLIRI feed.
-     */
     return [];
   } finally {
     clearTimeout(timeout);
   }
 }
 
+/*
+ * Remove duplicate URLs and substantially identical titles.
+ */
 function deduplicateStories(stories) {
-  const seenUrls = new Set();
-  const seenTitles = new Set();
+  const seenUrls =
+    new Set();
+
+  const seenTitles =
+    new Set();
+
   const unique = [];
 
   for (const story of stories) {
-    const normalizedTitle = story.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, " ")
-      .trim();
+    const normalizedTitle =
+      story.title
+        .toLowerCase()
+        .replace(
+          /[^a-z0-9]+/g,
+          " "
+        )
+        .trim();
 
     if (
       seenUrls.has(story.url) ||
-      seenTitles.has(normalizedTitle)
+      seenTitles.has(
+        normalizedTitle
+      )
     ) {
       continue;
     }
 
     seenUrls.add(story.url);
-    seenTitles.add(normalizedTitle);
+
+    seenTitles.add(
+      normalizedTitle
+    );
 
     unique.push(story);
   }
@@ -489,22 +664,39 @@ function deduplicateStories(stories) {
   return unique;
 }
 
+/*
+ * Prevent any single publisher from dominating the page.
+ */
 function limitSources(stories) {
-  const sourceCounts = new Map();
+  const sourceCounts =
+    new Map();
+
   const selected = [];
 
   for (const story of stories) {
     const current =
-      sourceCounts.get(story.source) || 0;
+      sourceCounts.get(
+        story.source
+      ) || 0;
 
-    if (current >= MAX_STORIES_PER_SOURCE) {
+    if (
+      current >=
+      MAX_STORIES_PER_SOURCE
+    ) {
       continue;
     }
 
-    sourceCounts.set(story.source, current + 1);
+    sourceCounts.set(
+      story.source,
+      current + 1
+    );
+
     selected.push(story);
 
-    if (selected.length >= MAX_STORIES_TOTAL) {
+    if (
+      selected.length >=
+      MAX_STORIES_TOTAL
+    ) {
       break;
     }
   }
@@ -512,28 +704,39 @@ function limitSources(stories) {
   return selected;
 }
 
+/*
+ * Preserve NOVLIRI's own manually written educational content.
+ */
 async function loadExistingNovliriContent() {
   try {
-    const text = await Deno.readTextFile(OUTPUT_FILE);
-    const existing = JSON.parse(text);
+    const text =
+      await Deno.readTextFile(
+        OUTPUT_FILE
+      );
+
+    const existing =
+      JSON.parse(text);
 
     if (!Array.isArray(existing)) {
       return [];
     }
 
-    /*
-     * Preserve NOVLIRI's own educational/tool/guide cards.
-     * Automated publisher stories will be regenerated.
-     */
     return existing.filter(story => {
       return (
         story &&
         story.source === "NOVLIRI" &&
-        typeof story.title === "string" &&
-        typeof story.category === "string" &&
-        typeof story.url === "string" &&
-        ALLOWED_CATEGORIES.has(story.category) &&
-        safeHttpsUrl(story.url)
+        typeof story.title ===
+          "string" &&
+        typeof story.category ===
+          "string" &&
+        typeof story.url ===
+          "string" &&
+        ALLOWED_CATEGORIES.has(
+          story.category
+        ) &&
+        safeHttpsUrl(
+          story.url
+        )
       );
     });
   } catch {
@@ -541,27 +744,44 @@ async function loadExistingNovliriContent() {
   }
 }
 
+/*
+ * Generate the final static news.json file.
+ */
 async function main() {
-  console.log("Starting NOVLIRI Learn feed update...");
-
-  const results = await Promise.all(
-    FEEDS.map(feed => fetchFeed(feed))
+  console.log(
+    "Starting NOVLIRI Learn feed update..."
   );
 
-  const automatedStories = results
-    .flat()
-    .sort((a, b) => {
-      return (
-        new Date(b.published).getTime() -
-        new Date(a.published).getTime()
-      );
-    });
+  const results =
+    await Promise.all(
+      FEEDS.map(feed =>
+        fetchFeed(feed)
+      )
+    );
+
+  const automatedStories =
+    results
+      .flat()
+      .sort((a, b) => {
+        return (
+          new Date(
+            b.published
+          ).getTime() -
+          new Date(
+            a.published
+          ).getTime()
+        );
+      });
 
   const uniqueStories =
-    deduplicateStories(automatedStories);
+    deduplicateStories(
+      automatedStories
+    );
 
   const limitedStories =
-    limitSources(uniqueStories);
+    limitSources(
+      uniqueStories
+    );
 
   const novliriContent =
     await loadExistingNovliriContent();
@@ -571,11 +791,19 @@ async function main() {
     ...novliriContent
   ].sort((a, b) => {
     return (
-      new Date(b.published).getTime() -
-      new Date(a.published).getTime()
+      new Date(
+        b.published
+      ).getTime() -
+      new Date(
+        a.published
+      ).getTime()
     );
   });
 
+  /*
+   * Never destroy a working feed because every external
+   * publisher happened to fail.
+   */
   if (
     limitedStories.length === 0 &&
     novliriContent.length === 0
@@ -586,7 +814,11 @@ async function main() {
   }
 
   const output =
-    `${JSON.stringify(finalStories, null, 2)}\n`;
+    `${JSON.stringify(
+      finalStories,
+      null,
+      2
+    )}\n`;
 
   await Deno.writeTextFile(
     OUTPUT_FILE,
