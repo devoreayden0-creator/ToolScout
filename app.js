@@ -572,3 +572,170 @@ document.querySelectorAll(".category").forEach(button => {
 });
 
 render();
+
+
+/* =========================================================
+   HOMEPAGE NEWS
+   ========================================================= */
+
+const homeNewsGrid = document.querySelector("#homeNewsGrid");
+const homeNewsStatus = document.querySelector("#homeNewsStatus");
+
+function safeNewsUrl(value) {
+  try {
+    const url = new URL(value);
+
+    if (url.protocol !== "https:") {
+      return null;
+    }
+
+    return url.href;
+  } catch {
+    return null;
+  }
+}
+
+function formatNewsDate(value) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(date);
+}
+
+function createHomeNewsCard(story) {
+  const article = document.createElement("article");
+  article.className = "news-card home-news-card";
+
+  const meta = document.createElement("div");
+  meta.className = "news-meta";
+
+  const category = document.createElement("span");
+  category.className = "news-category";
+  category.textContent = story.category || "News";
+
+  const source = document.createElement("span");
+  source.className = "news-source";
+  source.textContent = story.source || "Source";
+
+  meta.append(category, source);
+
+  const heading = document.createElement("h3");
+  heading.className = "news-title";
+  heading.textContent = story.title || "Untitled story";
+
+  const summary = document.createElement("p");
+  summary.className = "news-summary";
+  summary.textContent =
+    story.summary || "Read the original story for more information.";
+
+  const bottom = document.createElement("div");
+  bottom.className = "news-bottom";
+
+  const date = document.createElement("time");
+  date.className = "news-date";
+
+  const formattedDate = formatNewsDate(story.published);
+
+  if (formattedDate) {
+    date.textContent = formattedDate;
+    date.dateTime = story.published;
+  }
+
+  const link = document.createElement("a");
+  link.className = "news-link";
+  link.textContent = "Read original ↗";
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+
+  const destination = safeNewsUrl(story.url);
+
+  if (destination) {
+    link.href = destination;
+  } else {
+    link.removeAttribute("href");
+    link.setAttribute("aria-disabled", "true");
+  }
+
+  bottom.append(date, link);
+  article.append(meta, heading, summary, bottom);
+
+  return article;
+}
+
+async function loadHomeNews() {
+  if (!homeNewsGrid || !homeNewsStatus) {
+    return;
+  }
+
+  try {
+    const response = await fetch("news.json", {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error("Unable to load homepage news.");
+    }
+
+    const data = await response.json();
+
+    if (!Array.isArray(data)) {
+      throw new Error("Invalid homepage news feed.");
+    }
+
+    const validStories = data
+      .filter(story => {
+        return (
+          story &&
+          typeof story.title === "string" &&
+          typeof story.category === "string" &&
+          typeof story.url === "string"
+        );
+      })
+      .sort((a, b) => {
+        return (
+          new Date(b.published).getTime() -
+          new Date(a.published).getTime()
+        );
+      });
+
+    const externalStories = validStories.filter(
+      story => story.source !== "NOVLIRI"
+    );
+
+    const homepageStories = (
+      externalStories.length > 0 ? externalStories : validStories
+    ).slice(0, 6);
+
+    const fragment = document.createDocumentFragment();
+
+    homepageStories.forEach(story => {
+      fragment.appendChild(createHomeNewsCard(story));
+    });
+
+    homeNewsGrid.replaceChildren(fragment);
+
+    if (homepageStories.length === 0) {
+      homeNewsStatus.textContent =
+        "Current stories are temporarily unavailable.";
+      homeNewsStatus.hidden = false;
+    } else {
+      homeNewsStatus.hidden = true;
+    }
+  } catch (error) {
+    console.error("NOVLIRI homepage news:", error);
+
+    homeNewsGrid.replaceChildren();
+    homeNewsStatus.textContent =
+      "Current stories are temporarily unavailable. Please try again later.";
+    homeNewsStatus.hidden = false;
+  }
+}
+
+loadHomeNews();
