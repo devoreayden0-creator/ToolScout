@@ -23,6 +23,11 @@ jobs:
         with:
           ref: main
 
+      - name: Setup Deno
+        uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31 # v1.1.2
+        with:
+          deno-version: v1.x
+
       - name: Generate NOVLIRI news feed
         run: deno run --allow-net --allow-read --allow-write update-news.js
 
