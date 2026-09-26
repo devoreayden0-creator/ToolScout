@@ -182,6 +182,16 @@ const tools = [
     featured: true
   },
   {
+    name: "Systeme.io",
+    cat: "Business",
+    needs: ["Business", "Marketing", "Automation", "Sales", "Email", "Courses"],
+    desc: "All-in-one platform for sales funnels, email marketing, online courses, websites, and business automation.",
+    price: "Free option",
+    url: "https://systeme.io/?sa=sa028243659399c37a0319e83757cf2f8e286523f7&tk=novliri",
+    featured: true,
+    affiliate: true
+  },
+  {
     name: "Salesforce",
     cat: "Business",
     needs: ["Business", "CRM", "Sales"],
@@ -477,7 +487,11 @@ function render() {
   if (sort.value === "name") {
     list.sort((a, b) => a.name.localeCompare(b.name));
   } else {
-    list.sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
+    list.sort(
+      (a, b) =>
+        Number(Boolean(b.featured)) -
+        Number(Boolean(a.featured))
+    );
   }
 
   grid.innerHTML = list.map(tool => `
@@ -492,7 +506,12 @@ function render() {
 
       <div class="tool-bottom">
         <span>${tool.price}</span>
-        <a href="${tool.url}" target="_blank" rel="noopener sponsored">
+
+        <a
+          href="${tool.url}"
+          target="_blank"
+          rel="${tool.affiliate ? "noopener sponsored" : "noopener"}"
+        >
           Visit ↗
         </a>
       </div>
