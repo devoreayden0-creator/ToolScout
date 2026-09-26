@@ -1,20 +1,56 @@
-# ToolScout
+# NOVLIRI
 
-A zero-cost-to-host starter affiliate directory.
+**Discover better software. Build smarter.**
 
-## Run locally
-Open `index.html` in a browser. No build step is required.
+NOVLIRI is a curated software discovery platform designed to help people find useful tools for work, business, creativity, productivity, and everyday tasks.
 
-## Publish for free
-Upload the files to a static host such as GitHub Pages or Cloudflare Pages.
+🌐 https://novliri.com
 
-## Monetization checklist
-1. Replace placeholder contact email.
-2. Apply to affiliate programs relevant to the tools you list.
-3. Replace qualifying outbound URLs in `app.js` with your approved affiliate URLs.
-4. Add your analytics ID only after reviewing the provider's privacy requirements.
-5. Customize the privacy/disclosure pages for your actual setup.
-6. Add original content and comparisons rather than copying provider marketing text.
+## Discover Software by Need
 
-## Important
-The included privacy and affiliate disclosure pages are starter templates, not legal advice.
+NOVLIRI organizes software around what you actually want to accomplish, making it easier to discover tools for areas such as:
+
+- AI & Automation
+- Business
+- Productivity
+- Marketing
+- Creative Work
+- Development
+- Communication
+- Learning
+
+## Our Goal
+
+There are thousands of software products available online, and finding the right one can take time.
+
+NOVLIRI aims to make software discovery simpler by bringing useful tools together in one place and organizing them around real-world needs.
+
+## How NOVLIRI Works
+
+Software listed on NOVLIRI may include free tools, paid products, and services offering free plans or trials.
+
+Some links on NOVLIRI are affiliate links. If you purchase something through an affiliate link, NOVLIRI may receive a commission at no additional cost to you.
+
+See the website's Affiliate Disclosure for additional information.
+
+## Security
+
+Security issues should not be reported through public GitHub issues.
+
+If you discover a potential security vulnerability involving NOVLIRI, please follow the instructions in [SECURITY.md](SECURITY.md).
+
+## Development
+
+NOVLIRI is currently deployed as a static website using GitHub Pages.
+
+Changes to the production `main` branch are protected and must pass the repository's required checks before being merged.
+
+## Website
+
+**NOVLIRI**
+
+[https://novliri.com](https://novliri.com)
+
+---
+
+© 2026 NOVLIRI
