@@ -1,0 +1,112 @@
+name: Update NOVLIRI News
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: novliri-news-update
+  cancel-in-progress: false
+
+jobs:
+  update-news:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: main
+
+      - name: Generate NOVLIRI news feed
+        run: deno run --allow-net --allow-read --allow-write update-news.js
+
+      - name: Validate generated JSON
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("news.json")
+
+          if not path.exists():
+              raise SystemExit("news.json was not generated")
+
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          if not isinstance(data, list):
+              raise SystemExit("news.json must contain a JSON array")
+
+          if not data:
+              raise SystemExit("news.json contains no stories")
+
+          allowed_categories = {
+              "AI News",
+              "AI Tools",
+              "Cybersecurity",
+              "Work & Productivity",
+              "Business",
+              "Education",
+              "Guides",
+          }
+
+          required = {
+              "title",
+              "summary",
+              "category",
+              "source",
+              "published",
+              "url",
+          }
+
+          for index, story in enumerate(data):
+              if not isinstance(story, dict):
+                  raise SystemExit(
+                      f"Story {index} is not a JSON object"
+                  )
+
+              missing = required - story.keys()
+
+              if missing:
+                  raise SystemExit(
+                      f"Story {index} is missing: {sorted(missing)}"
+                  )
+
+              if story["category"] not in allowed_categories:
+                  raise SystemExit(
+                      f"Story {index} has an invalid category"
+                  )
+
+              if not story["url"].startswith("https://"):
+                  raise SystemExit(
+                      f"Story {index} has a non-HTTPS URL"
+                  )
+
+          print(f"Validated {len(data)} NOVLIRI stories.")
+          PY
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet -- news.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No news changes detected."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "New stories detected."
+          fi
+
+      - name: Commit updated feed
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "novliri-news-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add news.json
+          git commit -m "Update NOVLIRI Learn news feed"
+          git push origin HEAD:automated-news --force
