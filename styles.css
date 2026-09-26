@@ -1634,3 +1634,62 @@ footer {
     flex-direction: column;
   }
 }
+
+
+/* =========================================================
+   NOVLIRI HOMEPAGE NEWS
+   ========================================================= */
+
+.homepage-news {
+  position: relative;
+}
+
+.homepage-news::before {
+  content: "";
+  position: absolute;
+  width: 420px;
+  height: 300px;
+  right: -180px;
+  top: 30px;
+  border-radius: 50%;
+  background: rgba(91, 168, 255, 0.08);
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.home-news-status {
+  padding-top: 1.5rem;
+}
+
+.home-news-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-news-card {
+  min-height: 300px;
+}
+
+.home-news-card .news-title {
+  font-size: 1.12rem;
+}
+
+.home-news-card .news-summary {
+  font-size: 0.88rem;
+}
+
+@media (max-width: 950px) {
+  .home-news-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .home-news-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-news-card {
+    min-height: auto;
+  }
+}
