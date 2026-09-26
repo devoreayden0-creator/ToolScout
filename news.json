@@ -54,5 +54,53 @@
     "source": "NOVLIRI",
     "published": "2026-09-26T06:00:00Z",
     "url": "https://novliri.com/"
+  },
+  {
+    "title": "U.S. Soldier Gets 70 Months in Prison for AT&T, Verizon Extortions",
+    "summary": "A recent cybersecurity development reported by Krebs on Security. Read the original report for technical details and recommended actions.",
+    "category": "Cybersecurity",
+    "source": "Krebs on Security",
+    "published": "2026-09-25T21:44:40.000Z",
+    "url": "https://krebsonsecurity.com/2026/09/u-s-soldier-gets-70-months-in-prison-for-att-verizon-extortions/"
+  },
+  {
+    "title": "Introducing Gemini 3.8 Live with Live Avatar",
+    "summary": "A recent artificial intelligence development reported by Google DeepMind. Open the original source for the complete report.",
+    "category": "AI News",
+    "source": "Google DeepMind",
+    "published": "2026-09-24T16:20:39.000Z",
+    "url": "https://deepmind.google/blog/introducing-gemini-38-live-with-live-avatar/"
+  },
+  {
+    "title": "Advancing Private AI Compute with secure, server-side memory",
+    "summary": "A recent artificial intelligence development reported by Google DeepMind. Open the original source for the complete report.",
+    "category": "AI News",
+    "source": "Google DeepMind",
+    "published": "2026-09-23T16:00:57.000Z",
+    "url": "https://deepmind.google/blog/advancing-private-ai-compute-with-secure-server-side-memory/"
+  },
+  {
+    "title": "Gemini 3.8 text-to-speech says hello",
+    "summary": "A recent artificial intelligence development reported by Google DeepMind. Open the original source for the complete report.",
+    "category": "AI News",
+    "source": "Google DeepMind",
+    "published": "2026-09-23T15:25:14.000Z",
+    "url": "https://deepmind.google/blog/say-hello-to-gemini-38-text-to-speech/"
+  },
+  {
+    "title": "Data Broker Radaris Loses Domains in Privacy Fight",
+    "summary": "A recent cybersecurity development reported by Krebs on Security. Read the original report for technical details and recommended actions.",
+    "category": "Cybersecurity",
+    "source": "Krebs on Security",
+    "published": "2026-09-16T18:14:22.000Z",
+    "url": "https://krebsonsecurity.com/2026/09/data-broker-radaris-loses-domains-in-privacy-fight/"
+  },
+  {
+    "title": "Introducing Gemini 3.8 Live and 3.8 Live Extended Thinking",
+    "summary": "A recent artificial intelligence development reported by Google DeepMind. Open the original source for the complete report.",
+    "category": "AI News",
+    "source": "Google DeepMind",
+    "published": "2026-09-15T17:05:57.000Z",
+    "url": "https://deepmind.google/blog/introducing-gemini-3-8-live-and-3-8-live-extended-thinking/"
   }
 ]
